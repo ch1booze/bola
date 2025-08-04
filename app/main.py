@@ -1,8 +1,10 @@
 from datetime import date
 
-from app.database import create_db_and_tables, engine
 from fastapi import FastAPI
-from models import (
+from sqlmodel import Session, select
+
+from app.database import create_db_and_tables, engine
+from app.models import (
     Interest,
     LanguagePreference,
     Reminder,
@@ -12,7 +14,6 @@ from models import (
     UserReminder,
     UserRole,
 )
-from sqlmodel import Session, select
 
 app = FastAPI()
 
