@@ -1,12 +1,13 @@
 from datetime import date
+from enum import Enum
 from typing import Optional
 
 from sqlmodel import Field, SQLModel
 
 
-class UserRole(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    role: str
+class UserRole(str, Enum):
+    USER = "User"
+    CAREGIVER = "Caregiver"
 
 
 class User(SQLModel, table=True):
@@ -14,7 +15,7 @@ class User(SQLModel, table=True):
     full_name: str
     birthday: date
     gender: Optional[str] = None
-    role_id: Optional[int] = Field(default=None, foreign_key="userrole.id")
+    role: UserRole
 
 
 class Interest(SQLModel, table=True):

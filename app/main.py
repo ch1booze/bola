@@ -24,20 +24,12 @@ def on_startup():
 
 
 @app.post("/users/")
-def create_user(full_name: str, birthday: date, gender: str, role: str):
+def create_user(full_name: str, birthday: date, gender: str, role: UserRole):
     with Session(engine) as session:
-        user_role = UserRole(role=role)
-        session.add(user_role)
-        session.commit()
-        session.refresh(user_role)
-
-        user = User(
-            full_name=full_name, birthday=birthday, gender=gender, role_id=user_role.id
-        )
+        user = User(full_name=full_name, birthday=birthday, gender=gender, role=role)
         session.add(user)
         session.commit()
         session.refresh(user)
-
         return user
 
 
