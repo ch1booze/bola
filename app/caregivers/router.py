@@ -1,10 +1,10 @@
-from fastapi import Depends, APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
 from app.auth import get_current_user
+from app.caregivers.models import Caregiver, CreateCaregiverForm, UpdateCaregiverForm
 from app.database import engine
 from app.users.models import User
-from app.caregivers.models import CreateCaregiverForm, Caregiver
 
 caregivers_router = APIRouter(prefix="/caregivers")
 
@@ -23,3 +23,47 @@ def create_caregiver(
         session.commit()
         session.refresh(caregiver)
         return {"message": "Caregiver added", "caregiver": caregiver}
+
+
+from sqlmodel import select
+
+
+@caregivers_router.get("/")
+def get_user_caregivers(current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        caregivers = session.exec(
+            select(Caregiver).where(Caregiver.user_id == current_user.id)
+        ).all()
+        return {"caregivers": caregivers}
+
+
+@caregivers_router.put("/{caregiver_id}")
+def update_caregiver(
+    caregiver_id: str,
+    form: UpdateCaregiverForm,
+    current_user: User = Depends(get_current_user),
+):
+    with Session(engine) as session:
+        caregiver = session.get(Caregiver, caregiver_id)
+        if not caregiver or caregiver.user_id != current_user.id:
+            raise HTTPException(status_code=404, detail="Caregiver not found")
+
+        for field, value in form.model_dump(exclude_unset=True).items():
+            setattr(caregiver, field, value)
+
+        session.add(caregiver)
+        session.commit()
+        session.refresh(caregiver)
+        return {"message": "Caregiver updated", "caregiver": caregiver}
+
+
+@caregivers_router.delete("/{caregiver_id}")
+def delete_caregiver(caregiver_id: str, current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        caregiver = session.get(Caregiver, caregiver_id)
+        if not caregiver or caregiver.user_id != current_user.id:
+            raise HTTPException(status_code=404, detail="Caregiver not found")
+
+        session.delete(caregiver)
+        session.commit()
+        return {"message": "Caregiver deleted"}

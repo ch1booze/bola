@@ -1,15 +1,16 @@
-from fastapi import Depends, APIRouter
+from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
 from app.auth import get_current_user
 from app.database import engine
-from app.users.models import User
 from app.preferences.models import (
     SetInterestsForm,
     SetNicknameForm,
     SpeechPreference,
+    UpdatePreferencesForm,
     UserPreferences,
 )
+from app.users.models import User
 
 preferences_router = APIRouter(prefix="/preferences")
 
@@ -44,7 +45,7 @@ def set_interests(
             prefs = UserPreferences(
                 user_id=current_user.id,
                 interests=form.interests,
-                speech_preference=SpeechPreference.NEUTRAL
+                speech_preference=SpeechPreference.NEUTRAL,
             )
         else:
             prefs.interests = form.interests
@@ -53,3 +54,31 @@ def set_interests(
         session.commit()
         session.refresh(prefs)
         return {"message": "Interests updated", "preferences": prefs}
+
+
+@preferences_router.get("/")
+def get_preferences(current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        prefs = session.get(UserPreferences, current_user.id)
+        if not prefs:
+            return {"message": "No preferences set yet", "preferences": None}
+        return {"preferences": prefs}
+
+
+@preferences_router.put("/")
+def update_preferences(
+    form: UpdatePreferencesForm,
+    current_user: User = Depends(get_current_user),
+):
+    with Session(engine) as session:
+        prefs = session.get(UserPreferences, current_user.id)
+        if not prefs:
+            prefs = UserPreferences(user_id=current_user.id)
+
+        for field, value in form.model_dump(exclude_unset=True).items():
+            setattr(prefs, field, value)
+
+        session.add(prefs)
+        session.commit()
+        session.refresh(prefs)
+        return {"message": "Preferences updated", "preferences": prefs}

@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 
 from sqlmodel import Field, SQLModel
 
@@ -13,3 +14,10 @@ class CreateCaregiverForm(SQLModel):
 
 class Caregiver(CreateCaregiverForm, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+
+
+class UpdateCaregiverForm(SQLModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    relationship_to_user: Optional[str] = None
+    contact: Optional[str] = None

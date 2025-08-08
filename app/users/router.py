@@ -1,8 +1,8 @@
 import pyotp
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.auth import create_access_token
+from app.auth import create_access_token, get_current_user
 from app.database import engine
 from app.environment import OTP_SECRET_KEY
 from app.users.models import (
@@ -70,3 +70,17 @@ def verify_user(form: VerifyUserForm):
 
         access_token = create_access_token(str(user.id))
         return {"access_token": access_token, "token_type": "bearer"}
+
+
+@users_router.get("/me")
+def get_user_profile(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
+@users_router.delete("/me")
+def delete_user(current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        user = session.get(User, current_user.id)
+        if user:
+            session.delete(user)
+            session.commit()
