@@ -10,7 +10,7 @@ class SignupUserForm(SQLModel):
     last_name: str
     birthday: date
     gender: str
-    email_or_phone: str
+    email_or_phone: str = Field(unique=True)
     otp: Optional[str] = None
     is_verified: bool = Field(default=False)
 

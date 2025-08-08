@@ -9,7 +9,7 @@ from app.chats.models import Chat, DataType
 from app.database import engine
 from app.users.models import User
 
-chats_router = APIRouter(prefix="/chats")
+chats_router = APIRouter(prefix="/chats", tags=["Chats"])
 
 
 @chats_router.post("/")
