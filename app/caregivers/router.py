@@ -6,7 +6,7 @@ from app.caregivers.models import Caregiver, CreateCaregiverForm, UpdateCaregive
 from app.database import engine
 from app.users.models import User
 
-caregivers_router = APIRouter(prefix="/caregivers")
+caregivers_router = APIRouter(prefix="/caregivers", tags=["Caregivers"])
 
 
 @caregivers_router.post("/")

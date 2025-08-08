@@ -12,7 +12,7 @@ from app.preferences.models import (
 )
 from app.users.models import User
 
-preferences_router = APIRouter(prefix="/preferences")
+preferences_router = APIRouter(prefix="/preferences", tags=["Preferences"])
 
 
 @preferences_router.post("/nickname")

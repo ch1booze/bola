@@ -14,7 +14,7 @@ from app.users.models import (
 
 totp = pyotp.TOTP(OTP_SECRET_KEY, interval=900)
 
-users_router = APIRouter(prefix="/users")
+users_router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @users_router.post("/signup")
