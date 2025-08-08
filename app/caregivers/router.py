@@ -10,7 +10,7 @@ caregivers_router = APIRouter(prefix="/caregivers", tags=["Caregivers"])
 
 
 @caregivers_router.post("/")
-def create_caregiver(
+async def create_caregiver(
     form: CreateCaregiverForm, current_user: User = Depends(get_current_user)
 ):
     with Session(engine) as session:
@@ -29,7 +29,7 @@ from sqlmodel import select
 
 
 @caregivers_router.get("/")
-def get_user_caregivers(current_user: User = Depends(get_current_user)):
+async def get_user_caregivers(current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         caregivers = session.exec(
             select(Caregiver).where(Caregiver.user_id == current_user.id)
@@ -38,7 +38,7 @@ def get_user_caregivers(current_user: User = Depends(get_current_user)):
 
 
 @caregivers_router.put("/{caregiver_id}")
-def update_caregiver(
+async def update_caregiver(
     caregiver_id: str,
     form: UpdateCaregiverForm,
     current_user: User = Depends(get_current_user),
@@ -58,7 +58,9 @@ def update_caregiver(
 
 
 @caregivers_router.delete("/{caregiver_id}")
-def delete_caregiver(caregiver_id: str, current_user: User = Depends(get_current_user)):
+async def delete_caregiver(
+    caregiver_id: str, current_user: User = Depends(get_current_user)
+):
     with Session(engine) as session:
         caregiver = session.get(Caregiver, caregiver_id)
         if not caregiver or caregiver.user_id != current_user.id:

@@ -15,7 +15,7 @@ JWT_EXPIRE_MINUTES = 60 * 24
 security = HTTPBearer()
 
 
-def create_access_token(user_id: str):
+async def create_access_token(user_id: str):
     expires = datetime.now() + timedelta(minutes=JWT_EXPIRE_MINUTES)
     payload = {
         "sub": user_id,
@@ -24,7 +24,7 @@ def create_access_token(user_id: str):
     return jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
 
 
-def get_current_user(
+async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ):
     token = credentials.credentials

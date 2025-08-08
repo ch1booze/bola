@@ -16,7 +16,9 @@ preferences_router = APIRouter(prefix="/preferences", tags=["Preferences"])
 
 
 @preferences_router.post("/nickname")
-def set_nickname(form: SetNicknameForm, current_user: User = Depends(get_current_user)):
+async def set_nickname(
+    form: SetNicknameForm, current_user: User = Depends(get_current_user)
+):
     with Session(engine) as session:
         prefs = session.get(UserPreferences, current_user.id)
         if not prefs:
@@ -36,7 +38,7 @@ def set_nickname(form: SetNicknameForm, current_user: User = Depends(get_current
 
 
 @preferences_router.post("/interests")
-def set_interests(
+async def set_interests(
     form: SetInterestsForm, current_user: User = Depends(get_current_user)
 ):
     with Session(engine) as session:
@@ -57,7 +59,7 @@ def set_interests(
 
 
 @preferences_router.get("/")
-def get_preferences(current_user: User = Depends(get_current_user)):
+async def get_preferences(current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         prefs = session.get(UserPreferences, current_user.id)
         if not prefs:
@@ -66,7 +68,7 @@ def get_preferences(current_user: User = Depends(get_current_user)):
 
 
 @preferences_router.put("/")
-def update_preferences(
+async def update_preferences(
     form: UpdatePreferencesForm,
     current_user: User = Depends(get_current_user),
 ):

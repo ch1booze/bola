@@ -18,7 +18,7 @@ users_router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @users_router.post("/signup")
-def signup_user(form: SignupUserForm):
+async def signup_user(form: SignupUserForm):
     with Session(engine) as session:
         existing_user = session.exec(
             select(User).where(User.email_or_phone == form.email_or_phone)
@@ -37,7 +37,7 @@ def signup_user(form: SignupUserForm):
 
 
 @users_router.post("/login")
-def login_user(form: LoginUserForm):
+async def login_user(form: LoginUserForm):
     with Session(engine) as session:
         user = session.exec(
             select(User).where(User.email_or_phone == form.email_or_phone)
@@ -55,7 +55,7 @@ def login_user(form: LoginUserForm):
 
 
 @users_router.post("/verify")
-def verify_user(form: VerifyUserForm):
+async def verify_user(form: VerifyUserForm):
     with Session(engine) as session:
         user = session.exec(
             select(User).where(User.email_or_phone == form.email_or_phone)
@@ -73,12 +73,12 @@ def verify_user(form: VerifyUserForm):
 
 
 @users_router.get("/me")
-def get_user_profile(current_user: User = Depends(get_current_user)):
+async def get_user_profile(current_user: User = Depends(get_current_user)):
     return current_user
 
 
-@users_router.delete("/me")
-def delete_user(current_user: User = Depends(get_current_user)):
+@users_router.delete("/")
+async def delete_user(current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         user = session.get(User, current_user.id)
         if user:
