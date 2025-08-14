@@ -1,6 +1,7 @@
-from spitch import AsyncSpitch
 from groq import AsyncGroq
-from app.environment import SPITCH_API_KEY, GROQ_API_KEY
+from spitch import AsyncSpitch
+
+from app.environment import GROQ_API_KEY, SPITCH_API_KEY
 
 
 class SpitchClient:
@@ -29,7 +30,15 @@ class GroqClient:
     def __init__(self) -> None:
         self.client = AsyncGroq(api_key=GROQ_API_KEY)
 
-    async def _(): ...
+    async def generate(self, system_prompt: str, user_query: str):
+        chat_completion = await self.client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_query},
+            ],
+            model="llama3-8b-8192",
+        )
+        return chat_completion.choices[0].message.content 
 
 
 def get_groq_client():
