@@ -1,8 +1,14 @@
 import uuid
 from datetime import date
+from enum import StrEnum
 from typing import Optional
 
 from sqlmodel import Field, SQLModel
+
+
+class UserRole(StrEnum):
+    USER = "user"
+    CAREGIVER = "caregiver"
 
 
 class SignupUserForm(SQLModel):
@@ -13,6 +19,7 @@ class SignupUserForm(SQLModel):
     email_or_phone: str = Field(unique=True)
     otp: Optional[str] = None
     is_verified: bool = Field(default=False)
+    role: UserRole
 
 
 class LoginUserForm(SQLModel):
