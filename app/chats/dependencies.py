@@ -1,6 +1,6 @@
 from spitch import AsyncSpitch
-
-from app.environment import SPITCH_API_KEY
+from groq import AsyncGroq
+from app.environment import SPITCH_API_KEY, GROQ_API_KEY
 
 
 class SpitchClient:
@@ -23,3 +23,14 @@ class SpitchClient:
 
 def get_spitch_client():
     return SpitchClient()
+
+
+class GroqClient:
+    def __init__(self) -> None:
+        self.client = AsyncGroq(api_key=GROQ_API_KEY)
+
+    async def _(): ...
+
+
+def get_groq_client():
+    return GroqClient
