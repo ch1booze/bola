@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlmodel import select
 
 from app.auth import get_current_user
 from app.caregivers.models import Caregiver, CreateCaregiverForm, UpdateCaregiverForm
@@ -14,18 +15,15 @@ async def create_caregiver(
     session: SessionDep,
     current_user: User = Depends(get_current_user),
 ):
-    user = session.get(User, form.user_id)
+    user = session.get(User, current_user.id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    caregiver = Caregiver(**form.model_dump())
+    caregiver = Caregiver(**form.model_dump(), user_id=current_user.id)
     session.add(caregiver)
     session.commit()
     session.refresh(caregiver)
     return {"message": "Caregiver added", "caregiver": caregiver}
-
-
-from sqlmodel import select
 
 
 @caregivers_router.get("/")

@@ -65,7 +65,7 @@ async def verify_user(form: VerifyUserForm, session: SessionDep):
     session.add(user)
     session.commit()
 
-    access_token = create_access_token(str(user.id))
+    access_token = await create_access_token(str(user.id))
     return {"access_token": access_token, "token_type": "bearer"}
 
 

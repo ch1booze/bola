@@ -38,8 +38,8 @@ class GroqClient:
             ],
             model="llama3-8b-8192",
         )
-        return chat_completion.choices[0].message.content 
+        return chat_completion.choices[0].message.content
 
 
 def get_groq_client():
-    return GroqClient
+    return GroqClient()

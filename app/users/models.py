@@ -11,14 +11,17 @@ class UserRole(StrEnum):
     CAREGIVER = "caregiver"
 
 
+class Gender(StrEnum):
+    MALE = "male"
+    FEMALE = "female"
+
+
 class SignupUserForm(SQLModel):
     first_name: str
     last_name: str
     birthday: date
-    gender: str
+    gender: Gender
     email_or_phone: str = Field(unique=True)
-    otp: Optional[str] = None
-    is_verified: bool = Field(default=False)
     role: UserRole
 
 
@@ -33,3 +36,5 @@ class VerifyUserForm(SQLModel):
 
 class User(SignupUserForm, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    otp: Optional[str] = None
+    is_verified: bool = Field(default=False)
