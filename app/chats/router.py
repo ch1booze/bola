@@ -25,6 +25,7 @@ async def create_chat_from_audio(
     groq_client: GroqClient = Depends(get_groq_client),
     current_user: User = Depends(get_current_user),
 ):
+    languages = {"en": "English", "yo": "Yoruba", "ha": "Hausa", "ig": "Igbo"}
     previous_chats = session.exec(
         select(Chat)
         .where(Chat.user_id == current_user.id)
@@ -35,11 +36,15 @@ async def create_chat_from_audio(
     ).first()
 
     interests = []
+    preferred_lang = "en"
     if user_preferences:
         interests = user_preferences.interests
+        preferred_lang = user_preferences.language
 
     system_prompt = generate_system_prompt(
-        interests=interests, previous_chats=previous_chats
+        interests=interests,
+        previous_chats=previous_chats,
+        language=languages[preferred_lang],
     )
 
     query_audio_bytes = await audio_file.read()
@@ -67,6 +72,7 @@ async def create_chat_from_text(
     groq_client: GroqClient = Depends(get_groq_client),
     current_user: User = Depends(get_current_user),
 ):
+    languages = {"en": "English", "yo": "Yoruba", "ha": "Hausa", "ig": "Igbo"}
     previous_chats = session.exec(
         select(Chat)
         .where(Chat.user_id == current_user.id)
@@ -77,14 +83,20 @@ async def create_chat_from_text(
     ).first()
 
     interests = []
+    preferred_lang = "en"
     if user_preferences:
         interests = user_preferences.interests
+        preferred_lang = user_preferences.language
 
     system_prompt = generate_system_prompt(
-        interests=interests, previous_chats=previous_chats
+        interests=interests,
+        previous_chats=previous_chats,
+        language=languages[preferred_lang],
     )
 
-    reply = await groq_client.generate(system_prompt=system_prompt, user_query=form.query)
+    reply = await groq_client.generate(
+        system_prompt=system_prompt, user_query=form.query
+    )
     chat = Chat(
         user_id=current_user.id,
         query=form.query.encode("utf-8"),
