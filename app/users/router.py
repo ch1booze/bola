@@ -47,8 +47,7 @@ async def login_user(form: LoginUserForm, session: SessionDep):
     session.add(user)
     session.commit()
 
-    print(f"OTP for {form.email_or_phone}: {otp}")
-    return {"message": "OTP sent to user"}
+    return {"message": f"OTP: {otp}"}
 
 
 @users_router.post("/verify")
