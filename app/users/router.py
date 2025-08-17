@@ -31,8 +31,7 @@ async def signup_user(form: SignupUserForm, session: SessionDep):
     session.commit()
     session.refresh(user)
 
-    print(f"OTP for {form.email_or_phone}: {otp}")
-    return {"message": "User created, verify OTP sent"}
+    return {"message": f"OTP: {otp}"}
 
 
 @users_router.post("/login")
