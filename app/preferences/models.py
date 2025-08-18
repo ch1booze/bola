@@ -19,20 +19,11 @@ class Language(StrEnum):
     HA = "ha"
 
 
-class SetNicknameForm(SQLModel):
-    nickname: str
-
-
-class SetInterestsForm(SQLModel):
-    interests: list[str]
-
-
-class SetLanguageForm(SQLModel):
-    language: Language
-
-
-class SetSpeechPreferenceForm(SQLModel):
-    speech_preference: SpeechPreference
+class UpdatePreferenceForm(SQLModel):
+    nickname: Optional[str] = None
+    interests: Optional[list[str]] = None
+    speech_preference: Optional[SpeechPreference] = None
+    language: Optional[Language] = None
 
 
 class UserPreferences(SQLModel, table=True):

@@ -38,8 +38,6 @@ async def get_current_user(
 
     with Session(engine) as session:
         user = session.get(User, user_id)
-        if user is None or not user.is_verified:
-            raise HTTPException(
-                status_code=401, detail="User not found or not verified"
-            )
+        if user is None:
+            raise HTTPException(status_code=401, detail="User not found")
         return user

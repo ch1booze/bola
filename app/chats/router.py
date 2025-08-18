@@ -24,7 +24,7 @@ async def create_chat_from_audio(
     spitch_client: SpitchClient = Depends(get_spitch_client),
     groq_client: GroqClient = Depends(get_groq_client),
     current_user: User = Depends(get_current_user),
-)-> Chat:
+) -> Chat:
     languages = {"en": "English", "yo": "Yoruba", "ha": "Hausa", "ig": "Igbo"}
     previous_chats = session.exec(
         select(Chat)
@@ -71,7 +71,7 @@ async def create_chat_from_text(
     form: ChatRequestForm,
     groq_client: GroqClient = Depends(get_groq_client),
     current_user: User = Depends(get_current_user),
-)-> Chat:
+) -> Chat:
     languages = {"en": "English", "yo": "Yoruba", "ha": "Hausa", "ig": "Igbo"}
     previous_chats = session.exec(
         select(Chat)
