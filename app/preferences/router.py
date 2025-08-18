@@ -19,7 +19,7 @@ async def set_nickname(
     form: SetNicknameForm,
     session: SessionDep,
     current_user: User = Depends(get_current_user),
-):
+) -> UserPreferences:
     prefs = session.get(UserPreferences, current_user.id)
     if not prefs:
         prefs = UserPreferences(user_id=current_user.id, nickname=form.nickname)
@@ -29,7 +29,7 @@ async def set_nickname(
     session.add(prefs)
     session.commit()
     session.refresh(prefs)
-    return {"message": "Nickname updated", "preferences": prefs}
+    return prefs
 
 
 @preferences_router.post("/language")
@@ -37,7 +37,7 @@ async def set_language(
     form: SetLanguageForm,
     session: SessionDep,
     current_user: User = Depends(get_current_user),
-):
+) -> UserPreferences:
     prefs = session.get(UserPreferences, current_user.id)
     if not prefs:
         prefs = UserPreferences(user_id=current_user.id, language=form.language)
@@ -47,7 +47,7 @@ async def set_language(
     session.add(prefs)
     session.commit()
     session.refresh(prefs)
-    return {"message": "Nickname updated", "preferences": prefs}
+    return prefs
 
 
 @preferences_router.post("/speech")
@@ -55,7 +55,7 @@ async def set_speech_preference(
     form: SetSpeechPreferenceForm,
     session: SessionDep,
     current_user: User = Depends(get_current_user),
-):
+) -> UserPreferences:
     prefs = session.get(UserPreferences, current_user.id)
     if not prefs:
         prefs = UserPreferences(
@@ -67,7 +67,7 @@ async def set_speech_preference(
     session.add(prefs)
     session.commit()
     session.refresh(prefs)
-    return {"message": "Nickname updated", "preferences": prefs}
+    return prefs
 
 
 @preferences_router.post("/interests")
@@ -75,7 +75,7 @@ async def set_interests(
     form: SetInterestsForm,
     session: SessionDep,
     current_user: User = Depends(get_current_user),
-):
+) -> UserPreferences:
     prefs = session.get(UserPreferences, current_user.id)
     if not prefs:
         prefs = UserPreferences(
@@ -88,14 +88,12 @@ async def set_interests(
     session.add(prefs)
     session.commit()
     session.refresh(prefs)
-    return {"message": "Interests updated", "preferences": prefs}
+    return prefs
 
 
 @preferences_router.get("/")
 async def get_preferences(
     session: SessionDep, current_user: User = Depends(get_current_user)
-):
+) -> UserPreferences | None:
     prefs = session.get(UserPreferences, current_user.id)
-    if not prefs:
-        return {"message": "No preferences set yet", "preferences": None}
-    return {"preferences": prefs}
+    return prefs

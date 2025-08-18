@@ -16,8 +16,7 @@ class Gender(StrEnum):
 
 
 class SignupUserForm(SQLModel):
-    first_name: str
-    last_name: str
+    full_name: str
     birthday: date
     gender: Gender
     email_or_phone: str = Field(unique=True)
@@ -30,3 +29,7 @@ class LoginUserForm(SQLModel):
 
 class User(SignupUserForm, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+
+
+class AuthResponse(SQLModel):
+    access_token: str

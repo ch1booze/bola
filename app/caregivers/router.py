@@ -14,7 +14,7 @@ async def create_caregiver(
     form: CreateCaregiverForm,
     session: SessionDep,
     current_user: User = Depends(get_current_user),
-):
+) -> Caregiver:
     user = session.get(User, current_user.id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -23,17 +23,17 @@ async def create_caregiver(
     session.add(caregiver)
     session.commit()
     session.refresh(caregiver)
-    return {"message": "Caregiver added", "caregiver": caregiver}
+    return caregiver
 
 
 @caregivers_router.get("/")
 async def get_user_caregivers(
     session: SessionDep, current_user: User = Depends(get_current_user)
-):
+) -> list[Caregiver]:
     caregivers = session.exec(
         select(Caregiver).where(Caregiver.user_id == current_user.id)
     ).all()
-    return {"caregivers": caregivers}
+    return list(caregivers)
 
 
 @caregivers_router.put("/{caregiver_id}")
@@ -42,7 +42,7 @@ async def update_caregiver(
     form: UpdateCaregiverForm,
     session: SessionDep,
     current_user: User = Depends(get_current_user),
-):
+) -> Caregiver:
     caregiver = session.get(Caregiver, caregiver_id)
     if not caregiver or caregiver.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Caregiver not found")
@@ -53,7 +53,7 @@ async def update_caregiver(
     session.add(caregiver)
     session.commit()
     session.refresh(caregiver)
-    return {"message": "Caregiver updated", "caregiver": caregiver}
+    return caregiver
 
 
 @caregivers_router.delete("/{caregiver_id}")
@@ -61,11 +61,10 @@ async def delete_caregiver(
     caregiver_id: str,
     session: SessionDep,
     current_user: User = Depends(get_current_user),
-):
+) -> None:
     caregiver = session.get(Caregiver, caregiver_id)
     if not caregiver or caregiver.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Caregiver not found")
 
     session.delete(caregiver)
     session.commit()
-    return {"message": "Caregiver deleted"}

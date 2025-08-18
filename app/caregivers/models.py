@@ -5,8 +5,7 @@ from sqlmodel import Field, SQLModel
 
 
 class CreateCaregiverForm(SQLModel):
-    first_name: str
-    last_name: str
+    full_name: str
     relationship_to_user: str
     contact: str
 

@@ -24,7 +24,7 @@ async def create_chat_from_audio(
     spitch_client: SpitchClient = Depends(get_spitch_client),
     groq_client: GroqClient = Depends(get_groq_client),
     current_user: User = Depends(get_current_user),
-):
+)-> Chat:
     languages = {"en": "English", "yo": "Yoruba", "ha": "Hausa", "ig": "Igbo"}
     previous_chats = session.exec(
         select(Chat)
@@ -62,7 +62,7 @@ async def create_chat_from_audio(
     session.commit()
     session.refresh(chat)
 
-    return {"chat": chat}
+    return chat
 
 
 @chats_router.post("/text")
@@ -71,7 +71,7 @@ async def create_chat_from_text(
     form: ChatRequestForm,
     groq_client: GroqClient = Depends(get_groq_client),
     current_user: User = Depends(get_current_user),
-):
+)-> Chat:
     languages = {"en": "English", "yo": "Yoruba", "ha": "Hausa", "ig": "Igbo"}
     previous_chats = session.exec(
         select(Chat)
@@ -107,17 +107,17 @@ async def create_chat_from_text(
     session.commit()
     session.refresh(chat)
 
-    return {"chat": chat}
+    return chat
 
 
 @chats_router.get("/")
 async def get_chats(
     session: SessionDep, current_user: User = Depends(get_current_user)
-):
+) -> list[Chat]:
     statement = (
         select(Chat)
         .where(Chat.user_id == current_user.id)
         .order_by(Chat.created_at.desc())
     )
     results = session.exec(statement).all()
-    return results
+    return list(results)

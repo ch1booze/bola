@@ -3,17 +3,13 @@ from sqlmodel import select
 
 from app.auth import create_access_token, get_current_user
 from app.database import SessionDep
-from app.users.models import (
-    LoginUserForm,
-    SignupUserForm,
-    User,
-)
+from app.users.models import AuthResponse, LoginUserForm, SignupUserForm, User
 
 users_router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @users_router.post("/signup")
-async def signup_user(form: SignupUserForm, session: SessionDep):
+async def signup_user(form: SignupUserForm, session: SessionDep) -> AuthResponse:
     existing_user = session.exec(
         select(User).where(User.email_or_phone == form.email_or_phone)
     ).first()
@@ -26,7 +22,7 @@ async def signup_user(form: SignupUserForm, session: SessionDep):
     session.refresh(user)
 
     access_token = await create_access_token(str(user.id))
-    return {"access_token": access_token, "token_type": "bearer"}
+    return AuthResponse(access_token=access_token)
 
 
 @users_router.post("/login")
@@ -41,18 +37,18 @@ async def login_user(form: LoginUserForm, session: SessionDep):
     session.commit()
 
     access_token = await create_access_token(str(user.id))
-    return {"access_token": access_token, "token_type": "bearer"}
+    return AuthResponse(access_token=access_token)
 
 
 @users_router.get("/me")
-async def get_user_profile(current_user: User = Depends(get_current_user)):
+async def get_user_profile(current_user: User = Depends(get_current_user)) -> User:
     return current_user
 
 
 @users_router.delete("/")
 async def delete_user(
     session: SessionDep, current_user: User = Depends(get_current_user)
-):
+) -> None:
     user = session.get(User, current_user.id)
     if user:
         session.delete(user)

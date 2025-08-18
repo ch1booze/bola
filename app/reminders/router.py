@@ -13,10 +13,10 @@ async def set_reminder(
     form: SetReminderForm,
     session: SessionDep,
     current_user: User = Depends(get_current_user),
-):
+) -> Reminder:
     reminder = Reminder(**form.model_dump(), user_id=current_user.id)
     session.add(reminder)
     session.commit()
     session.refresh(reminder)
 
-    return {"message": "Reminder set"}
+    return reminder
