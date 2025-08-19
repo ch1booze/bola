@@ -56,13 +56,11 @@ async def create_chat_from_audio(
         query_audio_bytes = await audio_file.read()
         query = await spitch_client.stt(query_audio_bytes)
         reply = await llm.generate(system_prompt=system_prompt, user_query=query)
-        answer_audio_bytes = await spitch_client.tts(reply, user_preferences.language)
 
         chat = Chat(
             user_id=current_user.id,
             query=query,
             answer=reply,
-            answer_audio=answer_audio_bytes,
             datatype=DataType.AUDIO,
         )
         session.add(chat)

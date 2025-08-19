@@ -14,7 +14,6 @@ class SpitchClient:
         response = await self.client.speech.transcribe(
             language="en", content=audio_bytes
         )
-        print("STT:", response.text)
         return response.text
 
     async def tts(self, text: str, language: Language):
@@ -57,7 +56,6 @@ def get_groq_client():
 
 class GeminiClient:
     async def generate(self, system_prompt: str, user_query: str):
-        print(system_prompt + user_query)
         headers = {
             "Content-Type": "application/json",
             "x-goog-api-key": GEMINI_API_KEY,

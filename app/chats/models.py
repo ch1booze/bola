@@ -24,5 +24,7 @@ class Chat(SQLModel, table=True):
     user_id: uuid.UUID = Field(foreign_key="user.id")
     query: str
     answer: str
-    answer_audio: Optional[bytes] = Field(sa_column=Column(LargeBinary), default=None)
+    answer_audio: Optional[bytes] = Field(
+        sa_column=Column(LargeBinary, nullable=True), default=None
+    )
     datatype: DataType
