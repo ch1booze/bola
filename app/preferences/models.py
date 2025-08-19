@@ -19,6 +19,14 @@ class Language(StrEnum):
     HA = "ha"
 
 
+LANGUAGES_UNABBREVIATED = {
+    Language.EN: "English",
+    Language.YO: "Yoruba",
+    Language.HA: "Hausa",
+    Language.IG: "Igbo",
+}
+
+
 class UpdatePreferenceForm(SQLModel):
     nickname: Optional[str] = None
     interests: Optional[list[str]] = None

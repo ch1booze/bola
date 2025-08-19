@@ -23,4 +23,17 @@ class Chat(SQLModel, table=True):
     user_id: uuid.UUID = Field(foreign_key="user.id")
     query: str
     answer: str
-    datatype: DataType
+    datatype: DataType = Field(default=DataType.TEXT)
+
+
+class ChatExample(SQLModel):
+    casual: str
+    neutral: str
+    respectful: str
+
+
+class ChatExamples(SQLModel):
+    English: ChatExample
+    Yoruba: ChatExample
+    Hausa: ChatExample
+    Igbo: ChatExample

@@ -8,20 +8,13 @@ from app.chats.dependencies import (
     get_gemini_client,
     get_spitch_client,
 )
-from app.chats.models import Chat, ChatRequestForm, DataType
+from app.chats.models import Chat, ChatRequestForm, DataType, ChatExample, ChatExamples
 from app.chats.prompts import generate_system_prompt
 from app.database import SessionDep
-from app.preferences.models import Language, UserPreferences
+from app.preferences.models import Language, UserPreferences, LANGUAGES_UNABBREVIATED
 from app.users.models import User
 
 chats_router = APIRouter(prefix="/chats", tags=["Chats"])
-
-LANGUAGES = {
-    Language.EN: "English",
-    Language.YO: "Yoruba",
-    Language.HA: "Hausa",
-    Language.IG: "Igbo",
-}
 
 
 @chats_router.post("/audio")
@@ -50,7 +43,7 @@ async def create_chat_from_audio(
         system_prompt = generate_system_prompt(
             interests=interests,
             previous_chats=previous_chats,
-            language=LANGUAGES[preferred_lang],
+            language=LANGUAGES_UNABBREVIATED[preferred_lang],
             tone=user_preferences.speech_preference,
         )
 
@@ -96,7 +89,7 @@ async def create_chat_from_text(
         system_prompt = generate_system_prompt(
             interests=interests,
             previous_chats=previous_chats,
-            language=LANGUAGES[preferred_lang],
+            language=LANGUAGES_UNABBREVIATED[preferred_lang],
             tone=user_preferences.speech_preference,
         )
 
@@ -105,7 +98,6 @@ async def create_chat_from_text(
             user_id=current_user.id,
             query=form.query,
             answer=reply,
-            datatype=DataType.TEXT,
         )
         session.add(chat)
         session.commit()
@@ -128,26 +120,26 @@ async def get_chats(
 
 
 @chats_router.get("/examples")
-async def get_chat_examples():
-    return {
-        "English": {
-            "casual": "Hey! How are you doing today?",
-            "neutral": "How are you today?",
-            "respectful": "Good day. How are you feeling today?",
-        },
-        "Yoruba": {
-            "casual": "Báwo ni, ore mi? Ṣé o wa lę̀?",
-            "neutral": "Báwo ni lónìí?",
-            "respectful": "Ẹ káàsán sir/ma. Ṣé ara yín dáa lónìí?",
-        },
-        "Hausa": {
-            "casual": "Sannu aboki! Yaya kake yau?",
-            "neutral": "Yaya kake yau?",
-            "respectful": "Ina wuni ranka ya daɗe. Yaya lafiya?",
-        },
-        "Igbo": {
-            "casual": "Nwannem, kedu? Ị dị mma?",
-            "neutral": "Kedu maka gị taa?",
-            "respectful": "Ụtụtụ ọma sir/ma. Kedu ka ị mere?",
-        },
-    }
+async def get_chat_examples() -> ChatExamples:
+    return ChatExamples(
+        English=ChatExample(
+            casual="Hey! How are you doing today?",
+            neutral="How are you today?",
+            respectful="Good day. How are you feeling today?",
+        ),
+        Yoruba=ChatExample(
+            casual="Báwo ni, ore mi? Ṣé o wa lę̀?",
+            neutral="Báwo ni lónìí?",
+            respectful="Ẹ káàsán sir/ma. Ṣé ara yín dáa lónìí?",
+        ),
+        Hausa=ChatExample(
+            casual="Sannu aboki! Yaya kake yau?",
+            neutral="Yaya kake yau?",
+            respectful="Ina wuni ranka ya daɗe. Yaya lafiya?",
+        ),
+        Igbo=ChatExample(
+            casual="Nwannem, kedu? Ị dị mma?",
+            neutral="Kedu maka gị taa?",
+            respectful="Ụtụtụ ọma sir/ma. Kedu ka ị mere?",
+        ),
+    )
