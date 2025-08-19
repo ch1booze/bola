@@ -51,6 +51,7 @@ async def create_chat_from_audio(
             interests=interests,
             previous_chats=previous_chats,
             language=LANGUAGES[preferred_lang],
+            tone=user_preferences.speech_preference,
         )
 
         query_audio_bytes = await audio_file.read()
@@ -96,6 +97,7 @@ async def create_chat_from_text(
             interests=interests,
             previous_chats=previous_chats,
             language=LANGUAGES[preferred_lang],
+            tone=user_preferences.speech_preference,
         )
 
         reply = await llm.generate(system_prompt=system_prompt, user_query=form.query)
@@ -123,3 +125,29 @@ async def get_chats(
     )
     results = session.exec(statement).all()
     return list(results)
+
+
+@chats_router.get("/examples")
+async def get_chat_examples():
+    return {
+        "English": {
+            "casual": "Hey! How are you doing today?",
+            "neutral": "How are you today?",
+            "respectful": "Good day. How are you feeling today?",
+        },
+        "Yoruba": {
+            "casual": "Báwo ni, ore mi? Ṣé o wa lę̀?",
+            "neutral": "Báwo ni lónìí?",
+            "respectful": "Ẹ káàsán sir/ma. Ṣé ara yín dáa lónìí?",
+        },
+        "Hausa": {
+            "casual": "Sannu aboki! Yaya kake yau?",
+            "neutral": "Yaya kake yau?",
+            "respectful": "Ina wuni ranka ya daɗe. Yaya lafiya?",
+        },
+        "Igbo": {
+            "casual": "Nwannem, kedu? Ị dị mma?",
+            "neutral": "Kedu maka gị taa?",
+            "respectful": "Ụtụtụ ọma sir/ma. Kedu ka ị mere?",
+        },
+    }
