@@ -56,31 +56,23 @@ def get_groq_client():
 
 
 class GeminiClient:
-    def __init__(self) -> None:
-        self.api_key = GEMINI_API_KEY
-        self.client = httpx.AsyncClient()
-
-    async def generate(self, system_prompt: str, user_query: str) -> str:
+    async def generate(self, system_prompt: str, user_query: str):
+        print(system_prompt + user_query)
         headers = {
             "Content-Type": "application/json",
-            "X-goog-api-key": self.api_key,
+            "x-goog-api-key": GEMINI_API_KEY,
         }
+        payload = {"contents": [{"parts": [{"text": system_prompt + user_query}]}]}
 
-        payload = {
-            "contents": [
-                {
-                    "parts": [
-                        {"text": system_prompt + user_query},
-                    ]
-                }
-            ]
-        }
+        async with httpx.AsyncClient() as client:
+            response = await client.post(GEMINI_API_URL, headers=headers, json=payload)
+            response.raise_for_status()
 
-        response = await self.client.post(GEMINI_API_URL, headers=headers, json=payload)
-        response.raise_for_status()
-
-        data = response.json()
-        return data["candidates"][0]["content"]["parts"][0]["text"]
+            try:
+                return response.json()["candidates"][0]["content"]["parts"][0]["text"]
+            except (KeyError, IndexError) as e:
+                print("Full response:", response.json())
+                raise ValueError(f"Failed to extract response text: {e}")
 
 
 def get_gemini_client():

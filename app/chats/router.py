@@ -60,9 +60,10 @@ async def create_chat_from_audio(
 
         chat = Chat(
             user_id=current_user.id,
-            query=query_audio_bytes,
-            answer=answer_audio_bytes,
-            datatype=DataType.BYTES,
+            query=query,
+            answer=reply,
+            answer_audio=answer_audio_bytes,
+            datatype=DataType.AUDIO,
         )
         session.add(chat)
         session.commit()
@@ -102,8 +103,8 @@ async def create_chat_from_text(
         reply = await llm.generate(system_prompt=system_prompt, user_query=form.query)
         chat = Chat(
             user_id=current_user.id,
-            query=form.query.encode("utf-8"),
-            answer=reply.encode("utf-8"),
+            query=form.query,
+            answer=reply,
             datatype=DataType.TEXT,
         )
         session.add(chat)

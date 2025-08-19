@@ -1,13 +1,14 @@
 import uuid
 from datetime import datetime
 from enum import StrEnum
+from typing import Optional
 
 from sqlmodel import Column, DateTime, Field, LargeBinary, SQLModel
 
 
 class DataType(StrEnum):
     TEXT = "text"
-    BYTES = "bytes"
+    AUDIO = "audio"
 
 
 class ChatRequestForm(SQLModel):
@@ -21,6 +22,7 @@ class Chat(SQLModel, table=True):
         sa_column=Column(DateTime, nullable=False),
     )
     user_id: uuid.UUID = Field(foreign_key="user.id")
-    query: bytes = Field(sa_column=Column(LargeBinary))
-    answer: bytes = Field(sa_column=Column(LargeBinary))
+    query: str
+    answer: str
+    answer_audio: Optional[bytes] = Field(sa_column=Column(LargeBinary), default=None)
     datatype: DataType
