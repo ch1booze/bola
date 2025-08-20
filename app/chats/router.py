@@ -45,6 +45,8 @@ async def create_chat_from_audio(
             previous_chats=previous_chats,
             language=LANGUAGES_UNABBREVIATED[preferred_lang],
             tone=user_preferences.speech_preference,
+            name=current_user.full_name,
+            nickname=user_preferences.nickname,
         )
 
         query_audio_bytes = await audio_file.read()
