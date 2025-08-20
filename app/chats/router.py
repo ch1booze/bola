@@ -8,10 +8,10 @@ from app.chats.dependencies import (
     get_gemini_client,
     get_spitch_client,
 )
-from app.chats.models import Chat, ChatRequestForm, DataType, ChatExample, ChatExamples
+from app.chats.models import Chat, ChatExample, ChatExamples, ChatRequestForm, DataType
 from app.chats.prompts import generate_system_prompt
 from app.database import SessionDep
-from app.preferences.models import Language, UserPreferences, LANGUAGES_UNABBREVIATED
+from app.preferences.models import LANGUAGES_UNABBREVIATED, Language, UserPreferences
 from app.users.models import User
 
 chats_router = APIRouter(prefix="/chats", tags=["Chats"])
@@ -93,6 +93,8 @@ async def create_chat_from_text(
             previous_chats=previous_chats,
             language=LANGUAGES_UNABBREVIATED[preferred_lang],
             tone=user_preferences.speech_preference,
+            name=current_user.full_name,
+            nickname=user_preferences.nickname,
         )
 
         reply = await llm.generate(system_prompt=system_prompt, user_query=form.query)
