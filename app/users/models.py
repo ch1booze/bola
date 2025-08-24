@@ -32,4 +32,5 @@ class User(SignupUserForm, table=True):
 
 
 class AuthResponse(SQLModel):
+    user: User
     access_token: str

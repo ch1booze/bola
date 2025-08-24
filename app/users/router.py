@@ -22,7 +22,7 @@ async def signup_user(form: SignupUserForm, session: SessionDep) -> AuthResponse
     session.refresh(user)
 
     access_token = await create_access_token(str(user.id))
-    return AuthResponse(access_token=access_token)
+    return AuthResponse(access_token=access_token, user=user)
 
 
 @users_router.post("/login")
@@ -33,11 +33,8 @@ async def login_user(form: LoginUserForm, session: SessionDep):
     if not user:
         raise HTTPException(status_code=401, detail="User does not exist")
 
-    session.add(user)
-    session.commit()
-
     access_token = await create_access_token(str(user.id))
-    return AuthResponse(access_token=access_token)
+    return AuthResponse(access_token=access_token, user=user)
 
 
 @users_router.get("/me")
